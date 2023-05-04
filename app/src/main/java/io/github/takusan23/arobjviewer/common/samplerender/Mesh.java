@@ -19,6 +19,8 @@ import android.opengl.GLES30;
 import android.util.Log;
 
 import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.FloatBuffer;
@@ -151,7 +153,36 @@ public class Mesh implements Closeable {
     }
   }
 
-  @Override
+  /**
+   * Constructs a {@link Mesh} from the given Wavefront OBJ file.
+   *
+   * <p>The {@link Mesh} will be constructed with three attributes, indexed in the order of local
+   * coordinates (location 0, vec3), texture coordinates (location 1, vec2), and vertex normals
+   * (location 2, vec3).
+   */
+  public static Mesh createFromExternalFilePath(SampleRender render,File file) throws IOException {
+    try (InputStream inputStream = new FileInputStream(file)) {
+      Obj obj = ObjUtils.convertToRenderable(ObjReader.read(inputStream));
+
+      // Obtain the data from the OBJ, as direct buffers:
+      IntBuffer vertexIndices = ObjData.getFaceVertexIndices(obj, /*numVerticesPerFace=*/ 3);
+      FloatBuffer localCoordinates = ObjData.getVertices(obj);
+      FloatBuffer textureCoordinates = ObjData.getTexCoords(obj, /*dimensions=*/ 2);
+      FloatBuffer normals = ObjData.getNormals(obj);
+
+      VertexBuffer[] vertexBuffers = {
+              new VertexBuffer(render, 3, localCoordinates),
+              new VertexBuffer(render, 2, textureCoordinates),
+              new VertexBuffer(render, 3, normals),
+      };
+
+      IndexBuffer indexBuffer = new IndexBuffer(render, vertexIndices);
+
+      return new Mesh(render, Mesh.PrimitiveMode.TRIANGLES, indexBuffer, vertexBuffers);
+    }
+  }
+
+    @Override
   public void close() {
     if (vertexArrayId[0] != 0) {
       GLES30.glDeleteVertexArrays(1, vertexArrayId, 0);

@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- カメラ権限 -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    <!-- AR Core をサポートしている端末のみ Google Play で表示させる -->
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- AR Core をサポートしている端末のみ Google Play で表示させる -->
     <uses-feature
         android:name="android.hardware.camera.ar"
         android:required="true" />
@@ -23,7 +21,7 @@
         android:theme="@style/Theme.ARCoreGitHubSkyline"
         tools:targetApi="31">
 
-        <!-- AR Google Play Service のインストールを必須にする  -->
+        <!-- AR Google Play Service のインストールを必須にする -->
         <meta-data
             android:name="com.google.ar.core"
             android:value="required" />
@@ -33,14 +31,18 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
 
+        <activity
+            android:name=".ArActivity"
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
     </application>
 
 </manifest>

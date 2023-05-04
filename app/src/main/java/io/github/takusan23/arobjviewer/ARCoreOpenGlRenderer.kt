@@ -31,6 +31,7 @@ import io.github.takusan23.arobjviewer.common.samplerender.VertexBuffer
 import io.github.takusan23.arobjviewer.common.samplerender.arcore.BackgroundRenderer
 import io.github.takusan23.arobjviewer.common.samplerender.arcore.PlaneRenderer
 import io.github.takusan23.arobjviewer.common.samplerender.arcore.SpecularCubemapFilter
+import java.io.File
 import java.io.IOException
 import java.nio.ByteBuffer
 
@@ -39,6 +40,7 @@ class ARCoreOpenGlRenderer(
     private val context: Context,
     private val arCoreSessionLifecycleHelper: ARCoreSessionLifecycleHelper,
     private val tapHelper: TapHelper,
+    private val objectFilePath: String
 ) : SampleRender.Renderer, DefaultLifecycleObserver {
 
     /** カメラ映像をレンダリングするやつ */
@@ -144,7 +146,7 @@ class ARCoreOpenGlRenderer(
         GLError.maybeThrowGLException("Failed to populate DFG texture", "glTexImage2D")
 
         // 3Dオブジェクトを読み込む
-        virtualObjectMesh = Mesh.createFromAsset(render, "models/box.obj")
+        virtualObjectMesh = Mesh.createFromExternalFilePath(render, File(objectFilePath))
         virtualObjectShader = Shader.createFromAssets(
             render,
             "shaders/environmental_hdr.vert",
