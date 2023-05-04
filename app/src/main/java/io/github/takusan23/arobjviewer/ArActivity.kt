@@ -60,10 +60,11 @@ class ArActivity : AppCompatActivity() {
                         .align(Alignment.BottomCenter)
                         .padding(10.dp),
                     onDelete = { renderer.deleteAllObject() },
-                    onRotateLock = { renderer.isEnableRotation = !renderer.isEnableRotation },
+                    onRotateLock = { renderer.isEnablePoseRotation = !renderer.isEnablePoseRotation },
                     onRotateX = { renderer.isForceXRotate = !renderer.isForceXRotate },
                     onRotateY = { renderer.isForceYRotate = !renderer.isForceYRotate },
-                    onRotateZ = { renderer.isForceZRotate = !renderer.isForceZRotate }
+                    onRotateZ = { renderer.isForceZRotate = !renderer.isForceZRotate },
+                    onPlane = { renderer.isDrawPlane = !renderer.isDrawPlane }
                 )
             }
         }
@@ -108,7 +109,7 @@ class ArActivity : AppCompatActivity() {
         // システムUIを消す
         supportActionBar?.hide()
         WindowCompat.getInsetsController(window, window.decorView).apply {
-            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_SWIPE
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             hide(WindowInsetsCompat.Type.systemBars())
         }
         WindowCompat.setDecorFitsSystemWindows(window, false)

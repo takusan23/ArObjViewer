@@ -87,7 +87,7 @@ class ARCoreOpenGlRenderer(
     private val viewLightDirection = FloatArray(4)
 
     /** [com.google.ar.core.Pose.extractTranslation]を利用するか（回転を考慮するか） */
-    var isEnableRotation = false
+    var isEnablePoseRotation = false
 
     /** X方向に90度回転するか */
     var isForceXRotate = false
@@ -97,6 +97,9 @@ class ARCoreOpenGlRenderer(
 
     /** Z方向に90度回転するか */
     var isForceZRotate = false
+
+    /** 平面を描画するか（白いグリッド） */
+    var isDrawPlane = true
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
@@ -268,7 +271,9 @@ class ARCoreOpenGlRenderer(
         }
 
         // 平面を描画します
-        planeRenderer.drawPlanes(render, session.getAllTrackables(Plane::class.java), camera.displayOrientedPose, projectionMatrix)
+        if (isDrawPlane) {
+            planeRenderer.drawPlanes(render, session.getAllTrackables(Plane::class.java), camera.displayOrientedPose, projectionMatrix)
+        }
 
         // シェーダのライティングパラメータを更新
         updateLightEstimation(frame.lightEstimate, viewMatrix)
@@ -278,7 +283,7 @@ class ARCoreOpenGlRenderer(
         wrappedAnchors.filter { it.anchor.trackingState == TrackingState.TRACKING }.forEach { (anchor, trackable) ->
             // 登録した地点をもとに行列を作成する
             // 回転情報（axis）を考慮するか
-            (if (isEnableRotation) anchor.pose else anchor.pose.extractTranslation()).toMatrix(modelMatrix, 0)
+            (if (isEnablePoseRotation) anchor.pose else anchor.pose.extractTranslation()).toMatrix(modelMatrix, 0)
             // 回転するかどうか
             if (isForceXRotate || isForceYRotate || isForceZRotate) {
                 Matrix.rotateM(

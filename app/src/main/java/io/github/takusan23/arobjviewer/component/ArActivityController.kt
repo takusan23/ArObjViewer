@@ -1,8 +1,11 @@
 package io.github.takusan23.arobjviewer.component
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -24,20 +27,24 @@ fun ArActivityController(
     onRotateLock: () -> Unit,
     onRotateX: () -> Unit,
     onRotateY: () -> Unit,
-    onRotateZ: () -> Unit
+    onRotateZ: () -> Unit,
+    onPlane: () -> Unit
 ) {
-    Row(modifier = modifier) {
+    Row(modifier = modifier.height(IntrinsicSize.Max)) {
         Surface(
+            modifier = Modifier.fillMaxHeight(),
             color = Color.White,
             shape = RoundedCornerShape(25)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onDelete) { Icon(painter = painterResource(id = R.drawable.outline_delete_24), contentDescription = null) }
                 IconButton(onClick = onRotateLock) { Icon(painter = painterResource(id = R.drawable.outline_lock_reset_24), contentDescription = null) }
+                IconButton(onClick = onPlane) { Icon(painter = painterResource(id = R.drawable.baseline_grid_on_24), contentDescription = null) }
             }
         }
         Spacer(modifier = Modifier.width(20.dp))
         Surface(
+            modifier = Modifier.fillMaxHeight(),
             color = Color.White,
             shape = RoundedCornerShape(25)
         ) {
