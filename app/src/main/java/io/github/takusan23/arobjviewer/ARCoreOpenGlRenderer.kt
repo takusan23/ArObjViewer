@@ -264,8 +264,9 @@ class ARCoreOpenGlRenderer(
         // ARオブジェクトを描画
         render.clear(virtualSceneFramebuffer, 0f, 0f, 0f, 0f)
         wrappedAnchors.filter { it.anchor.trackingState == TrackingState.TRACKING }.forEach { (anchor, trackable) ->
-            // アンカーポーズ
-            anchor.pose.toMatrix(modelMatrix, 0)
+            // 登録した地点をもとに行列を作成する
+            // 回転情報（axis）は邪魔なので消したものを使う
+            anchor.pose.extractTranslation().toMatrix(modelMatrix, 0)
             // モデル、ビュー、投影行列 を計算
             Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0)
             Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
