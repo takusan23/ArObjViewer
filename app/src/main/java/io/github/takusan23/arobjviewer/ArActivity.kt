@@ -2,9 +2,14 @@ package io.github.takusan23.arobjviewer
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.google.ar.core.Config
 import io.github.takusan23.arobjviewer.common.helpers.CameraPermissionHelper
 import io.github.takusan23.arobjviewer.common.helpers.TapHelper
@@ -73,6 +78,17 @@ class ArActivity : AppCompatActivity() {
                     }
                 )
             }
+        }
+
+        // システムUIを消す
+        supportActionBar?.hide()
+        WindowCompat.getInsetsController(window, window.decorView).apply {
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_SWIPE
+            hide(WindowInsetsCompat.Type.systemBars())
+        }
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
         }
 
         // 描画する
