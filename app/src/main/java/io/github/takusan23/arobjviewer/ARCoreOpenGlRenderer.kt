@@ -309,6 +309,7 @@ class ARCoreOpenGlRenderer(
 
     /** 設置中のオブジェクトを破棄する */
     fun deleteAllObject() {
+        wrappedAnchors.forEach { it.anchor.detach() }
         wrappedAnchors.clear()
     }
 
