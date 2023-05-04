@@ -86,6 +86,18 @@ class ARCoreOpenGlRenderer(
     private val worldLightDirection = floatArrayOf(0.0f, 0.0f, 0.0f, 0.0f)
     private val viewLightDirection = FloatArray(4)
 
+    /** [com.google.ar.core.Pose.extractTranslation]を利用するか（回転を考慮するか） */
+    var isEnableRotation = false
+
+    /** X方向に90度回転するか */
+    var isForceXRotate = false
+
+    /** Y方向に90度回転するか */
+    var isForceYRotate = false
+
+    /** Z方向に90度回転するか */
+    var isForceZRotate = false
+
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
         displayRotationHelper.onResume()
@@ -265,8 +277,17 @@ class ARCoreOpenGlRenderer(
         render.clear(virtualSceneFramebuffer, 0f, 0f, 0f, 0f)
         wrappedAnchors.filter { it.anchor.trackingState == TrackingState.TRACKING }.forEach { (anchor, trackable) ->
             // 登録した地点をもとに行列を作成する
-            // 回転情報（axis）は邪魔なので消したものを使う
-            anchor.pose.extractTranslation().toMatrix(modelMatrix, 0)
+            // 回転情報（axis）を考慮するか
+            (if (isEnableRotation) anchor.pose else anchor.pose.extractTranslation()).toMatrix(modelMatrix, 0)
+            // 回転するかどうか
+            if (isForceXRotate || isForceYRotate || isForceZRotate) {
+                Matrix.rotateM(
+                    modelMatrix, 0, 90f,
+                    if (isForceXRotate) 1f else 0f,
+                    if (isForceYRotate) 1f else 0f,
+                    if (isForceZRotate) 1f else 0f
+                )
+            }
             // モデル、ビュー、投影行列 を計算
             Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0)
             Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
@@ -279,6 +300,11 @@ class ARCoreOpenGlRenderer(
 
         // 背景を使用して仮想シーンを構成します。
         backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR)
+    }
+
+    /** 設置中のオブジェクトを破棄する */
+    fun deleteAllObject() {
+        wrappedAnchors.clear()
     }
 
     /** 1フレームごとにタップを処理する */

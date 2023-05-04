@@ -5,8 +5,16 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -14,6 +22,7 @@ import com.google.ar.core.Config
 import io.github.takusan23.arobjviewer.common.helpers.CameraPermissionHelper
 import io.github.takusan23.arobjviewer.common.helpers.TapHelper
 import io.github.takusan23.arobjviewer.common.samplerender.SampleRender
+import io.github.takusan23.arobjviewer.component.ArActivityController
 
 class ArActivity : AppCompatActivity() {
 
@@ -41,7 +50,23 @@ class ArActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(arViewLifecycle.viewBinding.root)
+        setContent {
+            Box(modifier = Modifier.fillMaxSize()) {
+                AndroidView(factory = {
+                    arViewLifecycle.viewBinding.root
+                })
+                ArActivityController(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(10.dp),
+                    onDelete = { renderer.deleteAllObject() },
+                    onRotateLock = { renderer.isEnableRotation = !renderer.isEnableRotation },
+                    onRotateX = { renderer.isForceXRotate = !renderer.isForceXRotate },
+                    onRotateY = { renderer.isForceYRotate = !renderer.isForceYRotate },
+                    onRotateZ = { renderer.isForceZRotate = !renderer.isForceZRotate }
+                )
+            }
+        }
 
         // ライフサイクル
         lifecycle.addObserver(arCoreSessionLifecycleHelper)
